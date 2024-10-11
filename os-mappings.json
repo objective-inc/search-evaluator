@@ -1,0 +1,98 @@
+{
+  "settings": {
+    "number_of_shards": 1,
+    "number_of_replicas": 1
+  },
+  "mappings": {
+    "properties": {
+      "article_id": {
+        "type": "long"
+      },
+      "product_code": {
+        "type": "integer"
+      },
+      "prod_name": {
+        "type": "text"
+      },
+      "product_type_no": {
+        "type": "integer"
+      },
+      "product_type_name": {
+        "type": "text"
+      },
+      "product_group_name": {
+        "type": "text"
+      },
+      "graphical_appearance_no": {
+        "type": "integer"
+      },
+      "graphical_appearance_name": {
+        "type": "text"
+      },
+      "colour_group_code": {
+        "type": "integer"
+      },
+      "colour_group_name": {
+        "type": "text"
+      },
+      "perceived_colour_value_id": {
+        "type": "integer"
+      },
+      "perceived_colour_value_name": {
+        "type": "text"
+      },
+      "perceived_colour_master_id": {
+        "type": "integer"
+      },
+      "perceived_colour_master_name": {
+        "type": "text"
+      },
+      "department_no": {
+        "type": "integer"
+      },
+      "department_name": {
+        "type": "text"
+      },
+      "index_code": {
+        "type": "keyword"
+      },
+      "index_name": {
+        "type": "text"
+      },
+      "index_group_no": {
+        "type": "integer"
+      },
+      "index_group_name": {
+        "type": "text"
+      },
+      "section_no": {
+        "type": "integer"
+      },
+      "section_name": {
+        "type": "text"
+      },
+      "garment_group_no": {
+        "type": "integer"
+      },
+      "garment_group_name": {
+        "type": "text"
+      },
+      "detail_desc": {
+        "type": "text"
+      },
+      "image_url": {
+        "type": "text",
+        "index": false
+      },
+      "id": {
+        "type": "long"
+      },
+      "price": {
+        "type": "float"
+      },
+      "rating": {
+        "type": "float"
+      }
+    }
+  }
+}
