@@ -3,7 +3,7 @@ import os
 import shutil
 import concurrent.futures
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Optional, Callable
 
 import pandas as pd
 from pydantic import BaseModel, ConfigDict
@@ -21,6 +21,7 @@ DF_STYLE = [
 HTML_TEMPLATE = """
     <html>
     <head>
+        <script src="https://cdn.tailwindcss.com"></script>
         <style>
             body {{ font-family: Arial, sans-serif; }}
             table {{ border-collapse: collapse; width: 100%; }}
@@ -29,8 +30,14 @@ HTML_TEMPLATE = """
         </style>
     </head>
     <body>
-        <h1><svg class="text-primary fill-current h-5 w-auto" width="93" height="30" viewBox="0 0 93 30" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="31.8769" width="29.9999" height="29.9999" fill="currentColor"></rect><path d="M92.8086 30L62.8087 30L92.8086 8.01086e-05L92.8086 30Z" fill="currentColor"></path><ellipse cx="15" cy="15" rx="15" ry="15" fill="currentColor"></ellipse></svg>&nbsp;&nbsp;{title}</h1>
-        {df_html}
+        <div class="w-full p-5">
+        <h1 class="flex items-center text-3xl font-bold mb-4">
+            <svg class="text-primary fill-current h-5 w-auto mr-2" width="93" height="30" viewBox="0 0 93 30" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="31.8769" width="29.9999" height="29.9999" fill="currentColor"></rect><path d="M92.8086 30L62.8087 30L92.8086 8.01086e-05L92.8086 30Z" fill="currentColor"></path><ellipse cx="15" cy="15" rx="15" ry="15" fill="currentColor"></ellipse></svg>
+            {title}
+            </h1>
+            {df_html}
+        </div>
+
     </body>
     </html>
     """ 
@@ -165,12 +172,17 @@ class ObjectiveEvaluator(BaseModel):
         
         return result_df.sort_values(['query', 'position']).reset_index(drop=True)
        
-    def comparison_html(self, save_to_path: str):
+
+    def comparison_html(self, save_to_path: str, render_result: Optional[Callable] = None):
         df = self.comparison_df()
         styled_df = df.style.set_table_styles(DF_STYLE)
+        # Apply custom rendering if render_result is provided
+        if render_result:
+            object_columns = [col for col in df.columns if col.endswith('_object')]
+            styled_df = styled_df.format({col: render_result for col in object_columns})
 
         # Generate summary section
-        summary_html = "<h2>Summary Comparison</h2>"
+        summary_html = '<h2 class="text-2xl font-bold mb-4">Summary Comparison</h2>'
         summary_html += "<table>"
         summary_html += "<tr><th>Eval Name</th><th>GREAT</th><th>OK</th><th>BAD</th><th>Total</th></tr>"
 

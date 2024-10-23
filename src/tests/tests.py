@@ -1,12 +1,13 @@
 
 import os
+import json
 from dotenv import load_dotenv
 import pytest
 
 from objective_evaluator.evaluator import ObjectiveEvaluator
 from objective_evaluator.scrapers.objective import ObjectiveScraper, ObjectiveScrapeParams
 from objective_evaluator.scrapers.opensearch import OpenSearchScraper, OpenSearchScrapeParams
-
+from objective_evaluator.scrapers.rest import RestScraper, RestScrapeParams
 load_dotenv()
 
 
@@ -55,7 +56,31 @@ def test_load_compare_evals():
     evals = ["work/objective-10k_eval.json", "work/opensearch-10k_eval.json"]
     evaluator = ObjectiveEvaluator(scrapers=[], api_key='', work_dir="work/")
     evaluator.load_eval_results(evals)
-    df = evaluator.comparison_html("comparison.html")
+
+    def render_result(result):
+        if isinstance(result, str):
+            result = json.loads(result)
+            print(json.dumps(result, indent=2))
+            return f"""
+                <div class="min-w-[200px]">
+                    <h3 class="text-lg font-semibold mb-2">{result['prod_name']}</h3>
+                    <div class="flex">
+                        <div class="flex-none w-[100px] mr-2">
+                            <img src="{result['image_url']}" alt="{result['prod_name']}" class="w-full">
+                        </div>
+                        <div class="flex-grow">
+                            <p class="text-sm">
+                                <span class="font-medium">Color:</span> {result['colour_group_name']}
+                            </p>
+                            <p class="text-sm">
+                                <span class="font-medium">Department:</span> {result['department_name']}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            """
+
+    evaluator.comparison_html("comparison.html", render_result)
 
 
 
@@ -66,6 +91,31 @@ def test_load_single_eval():
    evaluator.load_eval_results(evals)
    evaluator.summary()
    evaluator.full_results_html("full.html")
+
+# @pytest.mark.order(5)
+# def test_rest_scraper():
+
+#     headers = {
+#         "objective-index-ids": "idx_REDACTED"
+#     }
+
+#     query_params = {
+#         "object_fields": "*"
+#     }
+
+#     params = RestScrapeParams(
+#         base_url="http://localhost:8080/v1/indexes/idx_REDACTED",
+#         endpoint="search",
+#         query_param_name="query",
+#         query_params=query_params,
+#         limit=10,
+#         headers=headers,
+#         scrape_id="test-rest-scraper"
+
+#     )
+
+#     rest_scraper = RestScraper(params)
+#     rest_scraper.scrape(["red dress", "graphic t-shirt"], save_to_path="work/rest_scrape.json")
 
 @pytest.mark.order(2)
 def test_evaluator():

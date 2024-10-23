@@ -43,3 +43,5 @@ work/
 bulk_data.json
 data.json
 *.html
+
+src/*_eval.py
